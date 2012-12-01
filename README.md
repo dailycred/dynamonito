@@ -1,4 +1,4 @@
-At Dailycred we use DynamoDB as a data store, and there's a lot to like about it:
+At [Dailycred][1] we use DynamoDB as a data store, and there's a lot to like about it:
 
 *  scalability and simplicity of NoSQL
 *  consistent performance
@@ -37,7 +37,7 @@ Another annoyance with provisioned throughput is that you **can only decrease yo
 We also run a lot of tests that use DynamoDB, which means a lot of items are written and read very quickly. We run the tests several times a day, which means our development database tables are sitting completely idle most of the time, only to be hammered with reads and writes when we run our unit tests. From a cost perspective, this isn't ideal. However, it's even worse if a developer has to wait extra time for his unit tests to complete.
 
 ### Our solution: Dynamonito, a lightweight caching utility for DynamoDB
-![](http://media.tumblr.com/tumblr_me7rlbEic01rrhf18.png)
+
 To work around some of these limitations, we built Dynamonito. Dynamonito is an open source tool we built to cache DynamoDB data, and save us an unnecessarily large bill.
 
 **Dynamonito is a drop in replacement for the high level mapper**. It intercepts the DynamoDB save operations, serializes the object into DynamoDB’s native wire protocol format in json, and puts the json in cache. The cache is a [write-through cache][3].
@@ -67,10 +67,13 @@ DynamonitoMapper cachedMapper =
 Foo foo = cachedMapper.load(Foo.class, "ce6f2b8c-32e9-4884-9f22-ba95144038b8");
 ```
 
+### License
+Dynamonito is licensed under the Apache 2.0 license.
 
 ### Author
 Shaun Ma
 + https://github.com/shaunma
 
+ [1]: https://www.dailycred.com/
  [3]: http://en.wikipedia.org/wiki/Cache_(computing)#Writing_policies
  [4]: https://github.com/dailycred/dynamonito
