@@ -396,7 +396,7 @@ public class DataType {
   }
 
   /**
-   * Convinience function to return a {@link DataType} with a random UUID as the hash key and current time in ms as the
+   * Convenience function to return a {@link DataType} with a random UUID as the hash key and current time in ms as the
    * range key.
    * 
    * @return

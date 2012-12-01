@@ -4,7 +4,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 /**
- * {@link DynamoDBReflector} contains methods for retrieving the model class's metadata. Unfortunatelly
+ * {@link DynamoDBReflector} contains methods for retrieving the model class's metadata. Unfortunately
  * the DynamoDBReflector's methods are not public. DynamonitoReflector wraps the DynamoDBReflector and delegates some of the methods
  * using reflection.
  * 

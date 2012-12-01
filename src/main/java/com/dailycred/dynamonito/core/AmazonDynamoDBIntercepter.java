@@ -43,7 +43,7 @@ import com.amazonaws.services.dynamodb.model.UpdateTableResult;
 import com.dailycred.dynamonito.util.Util;
 
 /**
- * A partial implementation of {@link AmazonDynamoDB}. This intercepter intecepts writes from the high level mapper and
+ * A partial implementation of {@link AmazonDynamoDB}. This intercepter intercepts writes from the high level mapper and
  * captures the JSON used in DynamoDB's wire transfer protocol.
  * 
  */
