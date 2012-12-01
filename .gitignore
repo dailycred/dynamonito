@@ -1,0 +1,7 @@
+.git
+.classpath
+.settings
+.project
+target
+src/test/resources/aws_credential.properties
+todo
