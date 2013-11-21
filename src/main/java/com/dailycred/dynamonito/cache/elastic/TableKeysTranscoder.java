@@ -1,4 +1,4 @@
-package com.dailycred.dynamonito.cache.index.elastic;
+package com.dailycred.dynamonito.cache.elastic;
 
 import java.util.List;
 import java.util.Map;

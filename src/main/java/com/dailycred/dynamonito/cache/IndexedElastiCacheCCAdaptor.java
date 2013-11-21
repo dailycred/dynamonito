@@ -2,7 +2,7 @@ package com.dailycred.dynamonito.cache;
 
 import java.util.List;
 
-import com.dailycred.dynamonito.cache.index.elastic.TableKeys;
+import com.dailycred.dynamonito.cache.elastic.TableKeys;
 
 import net.spy.memcached.MemcachedClientIF;
 
