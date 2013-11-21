@@ -1,8 +1,8 @@
 package com.dailycred.dynamonito.cache.elastic;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import net.spy.memcached.CASMutation;
 import net.spy.memcached.CASMutator;
@@ -17,8 +17,8 @@ public class TableKeys {
 	protected String key;
 
 	protected TableKeysTranscoder transcoder;
-	protected CASMutator<Map<String,List<String>>> mutator;
-	protected Map<String,List<String>> initialValue;
+	protected CASMutator<Map<String,Set<String>>> mutator;
+	protected Map<String,Set<String>> initialValue;
 
 
 	public TableKeys(MemcachedClientIF cache) {
@@ -29,27 +29,27 @@ public class TableKeys {
 		this.cache = cache;
 		this.key = key;
 		this.transcoder = new TableKeysTranscoder();
-		this.mutator = new CASMutator<Map<String,List<String>>>(cache, transcoder);
-		this.initialValue = new HashMap<String,List<String>>();
+		this.mutator = new CASMutator<Map<String,Set<String>>>(cache, transcoder);
+		this.initialValue = new HashMap<String,Set<String>>();
 	}
 
 
-	public Map<String,List<String>> add(final String table, final String key) {
-		return mutate(new CASMutation<Map<String,List<String>>>() {
+	public Map<String,Set<String>> add(final String table, final String key) {
+		return mutate(new CASMutation<Map<String,Set<String>>>() {
 			@Override
-			public Map<String, List<String>> getNewValue(
-					Map<String, List<String>> tableKeys) {
+			public Map<String, Set<String>> getNewValue(
+					Map<String, Set<String>> tableKeys) {
 				tableKeys.get(table).add(key);
 				return tableKeys;
 			}
 		});
 	}
 
-	public Map<String,List<String>> remove(final String table, final String key) {
-		return mutate(new CASMutation<Map<String,List<String>>>() {
+	public Map<String,Set<String>> remove(final String table, final String key) {
+		return mutate(new CASMutation<Map<String,Set<String>>>() {
 			@Override
-			public Map<String, List<String>> getNewValue(
-					Map<String, List<String>> tableKeys) {
+			public Map<String, Set<String>> getNewValue(
+					Map<String, Set<String>> tableKeys) {
 				tableKeys.get(table).remove(key);
 				return tableKeys;
 			}
@@ -57,12 +57,12 @@ public class TableKeys {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<String> removeTable(final String table) {
-		List<String> keys = ((Map<String, List<String>>)cache.get(key)).get(table);
-		mutate(new CASMutation<Map<String,List<String>>>() {
+	public Set<String> removeTable(final String table) {
+		Set<String> keys = ((Map<String, Set<String>>)cache.get(key)).get(table);
+		mutate(new CASMutation<Map<String,Set<String>>>() {
 			@Override
-			public Map<String, List<String>> getNewValue(
-					Map<String, List<String>> tableKeys) {
+			public Map<String, Set<String>> getNewValue(
+					Map<String, Set<String>> tableKeys) {
 				tableKeys.remove(table);
 				return tableKeys;
 			}
@@ -72,7 +72,7 @@ public class TableKeys {
 
 	@SuppressWarnings("unchecked")
 	public int count(String table) {
-		List<String> keys = ((Map<String, List<String>>)cache.get(key)).get(table);
+		Set<String> keys = ((Map<String, Set<String>>)cache.get(key)).get(table);
 		return (keys == null ? 0 : keys.size());
 	}
 
@@ -80,7 +80,7 @@ public class TableKeys {
 		cache.delete(key);
 	}
 
-	private Map<String,List<String>> mutate(CASMutation<Map<String,List<String>>> mutation) {
+	private Map<String,Set<String>> mutate(CASMutation<Map<String,Set<String>>> mutation) {
 		try {
 			return mutator.cas(this.key, initialValue, EXPIRATION, mutation);
 		} catch (Exception e) {
