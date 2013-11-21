@@ -1,10 +1,10 @@
 package com.dailycred.dynamonito.cache;
 
-import java.util.List;
-
-import com.dailycred.dynamonito.cache.elastic.TableKeys;
+import java.util.Set;
 
 import net.spy.memcached.MemcachedClientIF;
+
+import com.dailycred.dynamonito.cache.elastic.TableKeys;
 
 /**
  * This isn't very efficient right now.  It has to get/set a map of key sets
@@ -39,7 +39,7 @@ public class IndexedElastiCacheCCAdaptor extends ElastiCacheCCAdaptor {
 	@Override
 	public void remove(String table) {
 		//TODO bulk delete for keys in cache
-		List<String> keys = tables.removeTable(table);
+		Set<String> keys = tables.removeTable(table);
 		for( String key : keys ) {
 			cache.delete(key);
 		}
