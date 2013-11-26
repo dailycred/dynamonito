@@ -1,7 +1,6 @@
 package com.dailycred.dynamonito.util;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 import java.util.Map;
 import java.util.Set;
@@ -15,7 +14,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
 public class UtilTest {
-
+/*
   @Test
   public void testGetJsonObjFromAttributeValue() {
     fail("Not yet implemented");
@@ -45,7 +44,7 @@ public class UtilTest {
   public void testGetAttributeValue() {
     fail("Not yet implemented");
   }
-
+*/
   @Test
   public void testGetStringFromAttributeValues() throws Exception {
     Map<String, AttributeValue> existingVals = null;

@@ -1,5 +1,7 @@
 package com.dailycred.dynamonito.core;
 
+import net.spy.memcached.MemcachedClientIF;
+
 import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Assert;
 import org.junit.Before;
@@ -9,11 +11,18 @@ import com.amazonaws.services.dynamodb.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodb.datamodeling.DynamoDBMapperConfig;
 import com.amazonaws.services.dynamodb.datamodeling.DynamoDBRangeKey;
 import com.amazonaws.services.dynamodb.datamodeling.DynamoDBTable;
+import com.dailycred.dynamonito.cache.ElastiCacheCCAdaptor;
 import com.dailycred.dynamonito.cache.InMemoryCacheAdaptor;
+import com.dailycred.dynamonito.cache.IndexedElastiCacheCCAdaptor;
+import com.dailycred.dynamonito.cache.elastic.MemcachedClientProvider;
 import com.dailycred.dynamonito.util.Util;
+import com.dailycred.dynamonito.core.BaseTest;
 import com.google.common.base.Objects;
 
-public class HashRangeOnlyTest extends BaseTest {
+public class HashRangeOnlyIntegrationTest extends BaseTest {
+
+  private MemcachedClientIF eccClient;
+  private DynamoDBMapperConfig config;
 
   @DynamoDBCache
   @DynamoDBTable(tableName = "overwritten_in_config")
@@ -69,20 +78,38 @@ public class HashRangeOnlyTest extends BaseTest {
 
   @Before
   public void before() {
+    eccClient = new MemcachedClientProvider().get();
+	config = new DynamoDBMapperConfig(new DynamoDBMapperConfig.TableNameOverride(
+	    "hash_range_keys_only"));
+	getDynamoDBMapper().delete(new HashRangeOnly("hash", "range"), config);
   }
 
   @Test
   public void testKeyOnlyPut() throws Exception {
-    DynamoDBMapperConfig config = new DynamoDBMapperConfig(new DynamoDBMapperConfig.TableNameOverride(
-        "hash_range_keys_only"));
-    getDynamoDBMapper().delete(new HashRangeOnly("hash", "range"), config);
     InMemoryCacheAdaptor cacheAdaptor = new InMemoryCacheAdaptor();
+    testKeyOnlyPutWithCacheAdaptor(cacheAdaptor);
+  }
+
+  @Test
+  public void testKeyOnlyPutWithElastiCacheAdaptor() throws Exception {
+    CacheAdaptor cacheAdaptor = new ElastiCacheCCAdaptor(eccClient);
+    testKeyOnlyPutWithCacheAdaptor(cacheAdaptor);
+  }
+
+  @Test
+  public void testKeyOnlyPutWithIndexedElastiCacheAdaptor() throws Exception {
+    CacheAdaptor cacheAdaptor = new IndexedElastiCacheCCAdaptor(eccClient);
+    testKeyOnlyPutWithCacheAdaptor(cacheAdaptor);
+  }
+
+  private void testKeyOnlyPutWithCacheAdaptor(CacheAdaptor cacheAdaptor) throws Exception {
     DynamonitoMapper mapper = new DynamonitoMapper(getClient(), config, cacheAdaptor);
     HashRangeOnly obj = new HashRangeOnly("hash", "range");
     mapper.save(obj, config);
     String json = cacheAdaptor.get("hash_range_keys_only", obj.getHash(), obj.getRange());
     HashRangeOnly cachedObj = mapper.marshallIntoObject(HashRangeOnly.class,
-        Util.parseItemJson(new ObjectMapper().readTree(json)));
+    Util.parseItemJson(new ObjectMapper().readTree(json)));
     Assert.assertEquals(obj, cachedObj);
   }
+
 }
